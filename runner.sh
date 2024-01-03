@@ -13,11 +13,20 @@ then
     echo "Provide the Ip address"
     exit
 fi
-echo $ip
 
-rm graph_algorithm_service
-GOARCH=arm64 make graph_algorithm_service
+rm -f algo
+GOARCH=arm64 make algo
 scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ./graph_algorithm_service ubuntu@$ip:~/
+    ./algo ubuntu@$ip:~/
+echo "Running graph algorithm service"
 ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ubuntu@$ip "./graph_algorithm_service --address localhost:$port --repetitions $rep | cat >> client.log"
+    ubuntu@$ip "./algo --address localhost:$port --repetitions $rep 2> client.log"
+ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ubuntu@$ip "pkill access"
+
+dirName="test_$(date +%s)"
+mkdir $dirName
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ubuntu@$ip:~/server.log ./$dirName/
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ubuntu@$ip:~/client.log ./$dirName/

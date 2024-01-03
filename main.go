@@ -26,7 +26,7 @@ func oneHop(graphAccess *GraphAccessor, count int) {
 		personId := PERSON_LOW + (rand.Uint32() % (PERSON_HIGH - PERSON_LOW))
 		location := graphAccess.GetNeighbours(personId, 23)
 		duration := time.Now().Sub(start).Milliseconds()
-		log.Printf("Found %d locations in %d\n", len(location), duration)
+		log.Printf("OneHop: Found %d locations in %d\n", len(location), duration)
 	}
 }
 
@@ -44,7 +44,7 @@ func twoHop(graphAccess *GraphAccessor, count int) {
 			}
 		}
 		duration := time.Now().Sub(start).Milliseconds()
-		log.Printf("Found %d friends of friends in %d\n", len(friendsOfFriends), duration)
+		log.Printf("TwoHop: Found %d friends of friends in %d\n", len(friendsOfFriends), duration)
 	}
 }
 
@@ -61,7 +61,7 @@ func threeHop(graphAccess *GraphAccessor, count int) {
 			places[uniPlace] = struct{}{}
 		}
 		duration := time.Now().Sub(start).Milliseconds()
-		log.Printf("Found %d places in %d\n", len(places), duration)
+		log.Printf("ThreeHop: Found %d places in %d\n", len(places), duration)
 	}
 }
 

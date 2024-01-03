@@ -1,4 +1,4 @@
-.PHONY: graph_algorithm_service
+.PHONY: algo
 
-graph_algorithm_service:
-	go build .
+algo:
+	go build -o algo .
