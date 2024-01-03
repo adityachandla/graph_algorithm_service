@@ -25,8 +25,8 @@ func oneHop(graphAccess *GraphAccessor, count int) {
 		start := time.Now()
 		personId := PERSON_LOW + (rand.Uint32() % (PERSON_HIGH - PERSON_LOW))
 		location := graphAccess.GetNeighbours(personId, 23)
-		end := time.Now()
-		log.Printf("Found %d locations in %v\n", len(location), end.Sub(start))
+		duration := time.Now().Sub(start).Milliseconds()
+		log.Printf("Found %d locations in %d\n", len(location), duration)
 	}
 }
 
@@ -43,8 +43,8 @@ func twoHop(graphAccess *GraphAccessor, count int) {
 				friendsOfFriends[v] = struct{}{}
 			}
 		}
-		end := time.Now()
-		log.Printf("Found %d friends of friends in %v\n", len(friendsOfFriends), end.Sub(start))
+		duration := time.Now().Sub(start).Milliseconds()
+		log.Printf("Found %d friends of friends in %d\n", len(friendsOfFriends), duration)
 	}
 }
 
@@ -60,8 +60,8 @@ func threeHop(graphAccess *GraphAccessor, count int) {
 			uniPlace := graphAccess.GetNeighbours(uni, 18)[0]
 			places[uniPlace] = struct{}{}
 		}
-		end := time.Now()
-		log.Printf("Found %d places in %v\n", len(places), end.Sub(start))
+		duration := time.Now().Sub(start).Milliseconds()
+		log.Printf("Found %d places in %d\n", len(places), duration)
 	}
 }
 
@@ -72,7 +72,4 @@ func main() {
 	oneHop(graphAccess, *repetitions)
 	twoHop(graphAccess, *repetitions)
 	threeHop(graphAccess, *repetitions)
-
-	//These are bfs equivalent of these queries
-	//TODO
 }
