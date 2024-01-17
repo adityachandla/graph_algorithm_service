@@ -4,14 +4,14 @@ import (
 	"context"
 	"log"
 
-	"github.com/adityachandla/graph_algorithm_service/generated"
+	pb "github.com/adityachandla/graph_algorithm_service/generated"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GraphAccessor struct {
 	conn   *grpc.ClientConn
-	client generated.GraphAccessClient
+	client pb.GraphAccessClient
 }
 
 func InitializeGraphAccess(address string) *GraphAccessor {
@@ -20,17 +20,12 @@ func InitializeGraphAccess(address string) *GraphAccessor {
 	if err != nil {
 		log.Fatalf("Unable to connect to localhost:20301")
 	}
-	client := generated.NewGraphAccessClient(conn)
+	client := pb.NewGraphAccessClient(conn)
 	return &GraphAccessor{conn, client}
 }
 
-func (g *GraphAccessor) GetNeighbours(node, label uint32) []uint32 {
-	request := &generated.AccessRequest{
-		NodeId:   node,
-		Label:    label,
-		Incoming: false,
-	}
-	response, err := g.client.GetNeighbours(context.Background(), request)
+func (g *GraphAccessor) GetNeighbours(req *pb.AccessRequest) []uint32 {
+	response, err := g.client.GetNeighbours(context.Background(), req)
 	if err != nil {
 		panic(err)
 	}

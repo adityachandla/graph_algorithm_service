@@ -64,7 +64,7 @@ def analyze_client(filename):
 def cache_hits(l: list[int]) -> int:
     c = 0
     for v in l:
-        if v < 10:
+        if v < 25:
             c += 1
     return c
 
