@@ -1,0 +1,11 @@
+Person (<>, Knows)
+Post (<, containerForum)
+
+Forum (>, containedPosts)(>,comments)
+Person(>, worksAt)(>, locatedIn)
+
+Person (<>, Knows)(<>, Knows)(<>, Knows)
+Post (<, containerForum)(>, tag)(>, tagType)
+
+Forum (>, hasMember)(<>, Knows)(<>, Knows)(<>, Knows)
+Comment (>, creator)(>, interestedIn)(>, type)(>, superClass)
