@@ -58,7 +58,6 @@ func ParseQuery(input string) (QueryStr, error) {
 			return res, ParseError
 		}
 		res.Edges[i].Label = edges[i][2]
-		fmt.Println(edges[i])
 		switch edges[i][1] {
 		case ">":
 			res.Edges[i].Direction = OUTGOING
