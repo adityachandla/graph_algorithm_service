@@ -9,13 +9,13 @@ import (
 )
 
 type Query struct {
-	node  uint32
-	edges []Edge
+	Node  uint32
+	Edges []Edge
 }
 
 type Edge struct {
-	label uint32
-	dir   Direction
+	Label uint32
+	Dir   Direction
 }
 
 type QueryGenerator struct {
@@ -40,8 +40,8 @@ func (gen *QueryGenerator) Generate(queryStr *QueryStr, repetitions int) []Query
 	}
 	for i := range res {
 		nodeId := uint32(rand.Int63n(int64(interval.End-interval.Start+1))) + interval.Start
-		res[i].node = nodeId
-		res[i].edges = edges
+		res[i].Node = nodeId
+		res[i].Edges = edges
 	}
 	return res
 }

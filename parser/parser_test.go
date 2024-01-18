@@ -14,9 +14,9 @@ func TestGenerator(t *testing.T) {
 	queries := qg.Generate(&QueryStr{"person", []EdgeStr{{"one", BOTH}}}, 10)
 	assert.Equal(t, 10, len(queries))
 	for _, q := range queries {
-		assert.True(t, q.node >= 1 && q.node <= 300)
-		assert.Equal(t, 1, len(q.edges))
-		assert.Equal(t, BOTH, int(q.edges[0].dir))
-		assert.Equal(t, uint32(1), q.edges[0].label)
+		assert.True(t, q.Node >= 1 && q.Node <= 300)
+		assert.Equal(t, 1, len(q.Edges))
+		assert.Equal(t, BOTH, int(q.Edges[0].Dir))
+		assert.Equal(t, uint32(1), q.Edges[0].Label)
 	}
 }
