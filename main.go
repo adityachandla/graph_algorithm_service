@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/adityachandla/graph_algorithm_service/accessor"
@@ -51,6 +52,7 @@ func evaluateQueries(queries []parser.Query) {
 	graphAccess := accessor.InitializeGraphAccess(*address)
 
 	queryChannel := make(chan parser.Query)
+	var wg sync.WaitGroup
 	for i := 0; i < *parallelism; i++ {
 		var eval evaluator.Interface
 		if *algorithm == "bfs" {
@@ -58,12 +60,17 @@ func evaluateQueries(queries []parser.Query) {
 		} else if *algorithm == "dfs" {
 			eval = evaluator.NewDfsEvaluator(graphAccess)
 		}
-		go runQuery(queryChannel, eval)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			runQuery(queryChannel, eval)
+		}()
 	}
 	for i := range queries {
 		queryChannel <- queries[i]
 	}
 	close(queryChannel)
+	wg.Wait()
 }
 
 func runQuery(queryChannel <-chan parser.Query, eval evaluator.Interface) {
