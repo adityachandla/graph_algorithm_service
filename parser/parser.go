@@ -27,14 +27,14 @@ func (gen *QueryGenerator) Generate(queryStr *QueryStr, repetitions int) []Query
 	//All queries should share the same edge list.
 	edges := make([]Edge, len(queryStr.Edges))
 	for i, e := range queryStr.Edges {
-		labelUint, ok := gen.EdgeMap[e.Label]
+		labelUint, ok := gen.EdgeMap[strings.ToUpper(e.Label)]
 		if !ok {
 			panic(fmt.Sprintf("%s not found in edgeMap", e.Label))
 		}
 		edges[i] = Edge{labelUint, e.Direction}
 	}
 	res := make([]Query, repetitions)
-	interval, ok := gen.IntervalMap[queryStr.Name]
+	interval, ok := gen.IntervalMap[strings.ToUpper(queryStr.Name)]
 	if !ok {
 		panic(fmt.Sprintf("%s not found in intervalMap", queryStr.Name))
 	}

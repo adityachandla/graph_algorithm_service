@@ -5,47 +5,43 @@ import (
 	"github.com/adityachandla/graph_algorithm_service/parser"
 )
 
-type Interface interface {
-	Evaluate(q parser.Query) []uint32
-}
-
-type bfsNode struct {
+type dfsNode struct {
 	nodeId uint32
 	// This is the index of the label from the original
 	// query's label array
 	labelIdx int
 }
 
-type BFSEvaluator struct {
+type DFSEvaluator struct {
 	access accessor.GraphAccessor
 	result []uint32
-	queue  *Queue[bfsNode]
+	stack  *Stack[dfsNode]
 	seen   map[uint32]struct{}
 	edges  []parser.Edge
 }
 
-func NewBfsEvaluator(access accessor.GraphAccessor) *BFSEvaluator {
-	return &BFSEvaluator{access: access}
+func NewDfsEvaluator(access accessor.GraphAccessor) *DFSEvaluator {
+	return &DFSEvaluator{access: access}
 }
 
-func (eval *BFSEvaluator) initialize(q parser.Query) {
+func (eval *DFSEvaluator) initialize(q parser.Query) {
 	eval.result = make([]uint32, 0, 4)
-	eval.queue = NewQueue[bfsNode]()
+	eval.stack = NewStack[dfsNode]()
 	eval.edges = q.Edges
 	eval.seen = make(map[uint32]struct{})
-	eval.queue.AddToFront(bfsNode{q.Node, 0})
+	eval.stack.Push(dfsNode{q.Node, 0})
 }
 
-func (eval *BFSEvaluator) Evaluate(q parser.Query) []uint32 {
+func (eval *DFSEvaluator) Evaluate(q parser.Query) []uint32 {
 	eval.initialize(q)
-	for !eval.queue.Empty() {
-		toProcess := eval.queue.PopBack()
+	for !eval.stack.Empty() {
+		toProcess := eval.stack.Pop()
 		eval.processNode(toProcess)
 	}
 	return eval.result
 }
 
-func (eval *BFSEvaluator) processNode(toProcess bfsNode) {
+func (eval *DFSEvaluator) processNode(toProcess dfsNode) {
 	labelIdx := toProcess.labelIdx
 	request := accessor.GraphAccessRequest{
 		Src:   toProcess.nodeId,
@@ -60,10 +56,10 @@ func (eval *BFSEvaluator) processNode(toProcess bfsNode) {
 	}
 }
 
-func (eval *BFSEvaluator) addToQueue(neighbours []uint32, idx int) {
+func (eval *DFSEvaluator) addToQueue(neighbours []uint32, idx int) {
 	for _, n := range neighbours {
 		if _, ok := eval.seen[n]; !ok {
-			eval.queue.AddToFront(bfsNode{n, idx})
+			eval.stack.Push(dfsNode{n, idx})
 			eval.seen[n] = struct{}{}
 		}
 	}

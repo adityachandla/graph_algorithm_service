@@ -5,7 +5,7 @@ Forum (<, postContainerForum)(<,parentPost)
 Person(>, personWorksAt)(>, orgLocation)
 
 Person (<>, personKnows)(<>, personKnows)(<>, personKnows)
-Post (>, containerForum)(>, forumTag)(>, tagClass)
+Post (>, postContainerForum)(>, forumTag)(>, tagClass)
 
 Forum (>, forumMember)(<>, personKnows)(<>, personKnows)(<>, personKnows)
 Comment (>, commentCreator)(>, personInterestTag)(>, tagClass)(>, tagClassSuperclass)

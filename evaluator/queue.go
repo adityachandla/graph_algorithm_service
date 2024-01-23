@@ -38,6 +38,11 @@ func (q *Queue[T]) PopBack() T {
 	q.size--
 	node := q.end
 	q.end = q.end.prev
+	// If all elements are removed, we need to
+	// reset the queue to original state.
+	if q.end == nil {
+		q.start = nil
+	}
 	//These are important to avoid memory leak
 	node.prev = nil
 	node.next = nil

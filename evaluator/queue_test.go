@@ -19,3 +19,17 @@ func TestQueue(t *testing.T) {
 	assert.Equal(t, 33, val)
 	assert.True(t, q.Empty())
 }
+
+func TestMultipleAdds(t *testing.T) {
+	q := evaluator.NewQueue[int]()
+	q.AddToFront(22)
+	assert.False(t, q.Empty())
+	val := q.PopBack()
+	assert.Equal(t, 22, val)
+
+	q.AddToFront(33)
+	assert.False(t, q.Empty())
+	val = q.PopBack()
+	assert.Equal(t, 33, val)
+	assert.True(t, q.Empty())
+}
