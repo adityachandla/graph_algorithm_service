@@ -25,11 +25,8 @@ type BFSEvaluator struct {
 	access accessor.GraphAccessor
 	result []uint32
 	queue  *Queue[bfsNode]
-	// Do we need to keep track of which index we saw the node
-	// in? If we see the same node at another index, maybe we
-	// need to consider it?
-	seen  map[nodeLevel]struct{}
-	edges []parser.Edge
+	seen   map[nodeLevel]struct{}
+	edges  []parser.Edge
 }
 
 func NewBfsEvaluator(access accessor.GraphAccessor) *BFSEvaluator {
