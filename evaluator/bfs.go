@@ -16,12 +16,20 @@ type bfsNode struct {
 	labelIdx int
 }
 
+type nodeLevel struct {
+	nodeId uint32
+	idx    int
+}
+
 type BFSEvaluator struct {
 	access accessor.GraphAccessor
 	result []uint32
 	queue  *Queue[bfsNode]
-	seen   map[uint32]struct{}
-	edges  []parser.Edge
+	// Do we need to keep track of which index we saw the node
+	// in? If we see the same node at another index, maybe we
+	// need to consider it?
+	seen  map[nodeLevel]struct{}
+	edges []parser.Edge
 }
 
 func NewBfsEvaluator(access accessor.GraphAccessor) *BFSEvaluator {
@@ -32,7 +40,7 @@ func (eval *BFSEvaluator) initialize(q parser.Query) {
 	eval.result = make([]uint32, 0, 4)
 	eval.queue = NewQueue[bfsNode]()
 	eval.edges = q.Edges
-	eval.seen = make(map[uint32]struct{})
+	eval.seen = make(map[nodeLevel]struct{})
 	eval.queue.AddToFront(bfsNode{q.Node, 0})
 }
 
@@ -62,9 +70,9 @@ func (eval *BFSEvaluator) processNode(toProcess bfsNode) {
 
 func (eval *BFSEvaluator) addToQueue(neighbours []uint32, idx int) {
 	for _, n := range neighbours {
-		if _, ok := eval.seen[n]; !ok {
+		if _, ok := eval.seen[nodeLevel{n, idx}]; !ok {
 			eval.queue.AddToFront(bfsNode{n, idx})
-			eval.seen[n] = struct{}{}
+			eval.seen[nodeLevel{n, idx}] = struct{}{}
 		}
 	}
 }

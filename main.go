@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/adityachandla/graph_algorithm_service/accessor"
@@ -23,6 +24,7 @@ const queryFile = "queries.txt"
 
 func main() {
 	flag.Parse()
+	rand.Seed(17041998)
 	graphAccess := accessor.InitializeGraphAccess(*address)
 	edgeMap := parser.ParseEdgeLabels(edgeMapFile)
 	intervalMap := parser.ParseNodeIntervals(*nodeMapFile)

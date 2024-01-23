@@ -16,7 +16,7 @@ type DFSEvaluator struct {
 	access accessor.GraphAccessor
 	result []uint32
 	stack  *Stack[dfsNode]
-	seen   map[uint32]struct{}
+	seen   map[nodeLevel]struct{}
 	edges  []parser.Edge
 }
 
@@ -28,7 +28,7 @@ func (eval *DFSEvaluator) initialize(q parser.Query) {
 	eval.result = make([]uint32, 0, 4)
 	eval.stack = NewStack[dfsNode]()
 	eval.edges = q.Edges
-	eval.seen = make(map[uint32]struct{})
+	eval.seen = make(map[nodeLevel]struct{})
 	eval.stack.Push(dfsNode{q.Node, 0})
 }
 
@@ -58,9 +58,9 @@ func (eval *DFSEvaluator) processNode(toProcess dfsNode) {
 
 func (eval *DFSEvaluator) addToQueue(neighbours []uint32, idx int) {
 	for _, n := range neighbours {
-		if _, ok := eval.seen[n]; !ok {
+		if _, ok := eval.seen[nodeLevel{n, idx}]; !ok {
 			eval.stack.Push(dfsNode{n, idx})
-			eval.seen[n] = struct{}{}
+			eval.seen[nodeLevel{n, idx}] = struct{}{}
 		}
 	}
 }
