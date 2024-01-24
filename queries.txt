@@ -1,11 +1,11 @@
-Person (<>, personKnows)
+Forum (>, forumMember)
 Post (>, postContainerForum)
 
-Forum (<, postContainerForum)(<,parentPost)
+Person (<>, personKnows)(<>, personKnows)
 Person(>, personWorksAt)(>, orgLocation)
 
-Person (<>, personKnows)(<>, personKnows)(<>, personKnows)
+Person (<>, personKnows)(>, personInterestTag)(>, tagClass)
 Post (>, postContainerForum)(>, forumTag)(>, tagClass)
 
-Forum (>, forumMember)(<>, personKnows)(<>, personKnows)(<>, personKnows)
+Forum (>, forumMember)(<, postCreator)(<, parentPost)(>, commentCreator)
 Comment (>, commentCreator)(>, personInterestTag)(>, tagClass)(>, tagClassSuperclass)

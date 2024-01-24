@@ -19,13 +19,12 @@ var (
 	repetitions = flag.Int("repetitions", 5, "The number of times each query should be repeated")
 	algorithm   = flag.String("algorithm", "bfs", "Evaluate with bfs/dfs order")
 	parallelism = flag.Int("parallelism", 1, "Number of queries to evaluate in parallel")
+	queryFile   = flag.String("query", "queries.txt", "File with queries")
 )
 
 const edgeMapFile = "edgeMap.csv"
-const queryFile = "queries.txt"
 
 func main() {
-	//Initialization
 	flag.Parse()
 	rand.Seed(17041998)
 	queries := generateQueries()
@@ -35,14 +34,14 @@ func main() {
 func generateQueries() []parser.Query {
 	edgeMap := parser.ParseEdgeLabels(edgeMapFile)
 	intervalMap := parser.ParseNodeIntervals(*nodeMapFile)
-	queryStrs := parser.ParseQueries(queryFile)
+	queryStrs := parser.ParseQueries(*queryFile)
 	qg := parser.QueryGenerator{
 		EdgeMap:     edgeMap,
 		IntervalMap: intervalMap,
 	}
 	queries := make([]parser.Query, 0, len(queryStrs)*(*repetitions))
 	for queryIdx := range queryStrs {
-		q := qg.Generate(&queryStrs[queryIdx], *repetitions)
+		q := qg.Generate(&queryStrs[queryIdx], queryIdx, *repetitions)
 		queries = append(queries, q...)
 	}
 	return queries
@@ -78,6 +77,6 @@ func runQuery(queryChannel <-chan parser.Query, eval evaluator.Interface) {
 		start := time.Now()
 		res := eval.Evaluate(q)
 		diff := time.Now().Sub(start)
-		log.Printf("%d results in %v\n", len(res), diff)
+		log.Printf("QueryId=%d Results=%d time=%dms\n", q.Id, len(res), diff.Milliseconds())
 	}
 }

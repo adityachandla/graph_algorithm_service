@@ -11,6 +11,7 @@ import (
 type Query struct {
 	Node  uint32
 	Edges []Edge
+	Id    int
 }
 
 type Edge struct {
@@ -23,7 +24,7 @@ type QueryGenerator struct {
 	IntervalMap map[string]Interval
 }
 
-func (gen *QueryGenerator) Generate(queryStr *QueryStr, repetitions int) []Query {
+func (gen *QueryGenerator) Generate(queryStr *QueryStr, idx, repetitions int) []Query {
 	//All queries should share the same edge list.
 	edges := make([]Edge, len(queryStr.Edges))
 	for i, e := range queryStr.Edges {
@@ -42,6 +43,7 @@ func (gen *QueryGenerator) Generate(queryStr *QueryStr, repetitions int) []Query
 		nodeId := uint32(rand.Int63n(int64(interval.End-interval.Start+1))) + interval.Start
 		res[i].Node = nodeId
 		res[i].Edges = edges
+		res[i].Id = idx
 	}
 	return res
 }
