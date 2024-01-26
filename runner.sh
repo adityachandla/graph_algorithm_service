@@ -5,7 +5,7 @@ set -e
 
 pem_file_path="~/Downloads/graphDbIreland.pem"
 port="20301"
-rep=1000
+rep=100
 
 ip=$1
 if [ -z "$1" ]
@@ -18,15 +18,13 @@ rm -f algo
 GOARCH=arm64 make algo
 scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
     ./algo ubuntu@$ip:~/
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ./*.csv ubuntu@$ip:~/
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ./*.sh ubuntu@$ip:~/
 echo "Running graph algorithm service"
-ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ubuntu@$ip "./algo --address localhost:$port --repetitions $rep 2> client.log"
-ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ubuntu@$ip "pkill access"
+#ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    #ubuntu@$ip "./run_variations_s3.sh"
 
-dirName="test_$(date +%s)"
-mkdir $dirName
-scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ubuntu@$ip:~/server.log ./$dirName/
-scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    ubuntu@$ip:~/client.log ./$dirName/
+#scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    #ubuntu@$ip:~/*.txt .

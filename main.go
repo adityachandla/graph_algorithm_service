@@ -15,7 +15,7 @@ import (
 //go:generate protoc --go-grpc_out=generated --go_out=generated --go_opt=paths=source_relative  --go-grpc_opt=paths=source_relative graph_access.proto
 var (
 	address     = flag.String("address", "localhost:20301", "Address to host")
-	nodeMapFile = flag.String("nodeMap", "nodeMap.csv", "The file that contains node to range mapping")
+	nodeMapFile = flag.String("nodeMap", "nodeMap1.csv", "The file that contains node to range mapping")
 	repetitions = flag.Int("repetitions", 5, "The number of times each query should be repeated")
 	algorithm   = flag.String("algorithm", "bfs", "Evaluate with bfs/dfs order")
 	parallelism = flag.Int("parallelism", 1, "Number of queries to evaluate in parallel")

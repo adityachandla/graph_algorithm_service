@@ -7,5 +7,4 @@ Person(>, personWorksAt)(>, orgLocation)
 Person (<>, personKnows)(>, personInterestTag)(>, tagClass)
 Post (>, postContainerForum)(>, forumTag)(>, tagClass)
 
-Forum (>, forumMember)(<, postCreator)(<, parentPost)(>, commentCreator)
 Comment (>, commentCreator)(>, personInterestTag)(>, tagClass)(>, tagClassSuperclass)
