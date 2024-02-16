@@ -15,7 +15,7 @@ import (
 //go:generate protoc --go-grpc_out=generated --go_out=generated --go_opt=paths=source_relative  --go-grpc_opt=paths=source_relative graph_access.proto
 var (
 	address     = flag.String("address", "localhost:20301", "Address to host")
-	nodeMapFile = flag.String("nodeMap", "nodeMap1.csv", "The file that contains node to range mapping")
+	nodeMapFile = flag.String("nodeMap", "nodeMap10.csv", "The file that contains node to range mapping")
 	repetitions = flag.Int("repetitions", 5, "The number of times each query should be repeated")
 	algorithm   = flag.String("algorithm", "bfs", "Evaluate with bfs/dfs order")
 	parallelism = flag.Int("parallelism", 1, "Number of queries to evaluate in parallel")
@@ -28,10 +28,12 @@ func main() {
 	flag.Parse()
 	rand.Seed(17041998)
 	queries := generateQueries()
-	evaluateQueries(queries)
+	for _, queryArray := range queries {
+		evaluateQueries(queryArray)
+	}
 }
 
-func generateQueries() []parser.Query {
+func generateQueries() [][]parser.Query {
 	edgeMap := parser.ParseEdgeLabels(edgeMapFile)
 	intervalMap := parser.ParseNodeIntervals(*nodeMapFile)
 	queryStrs := parser.ParseQueries(*queryFile)
@@ -39,10 +41,10 @@ func generateQueries() []parser.Query {
 		EdgeMap:     edgeMap,
 		IntervalMap: intervalMap,
 	}
-	queries := make([]parser.Query, 0, len(queryStrs)*(*repetitions))
+	queries := make([][]parser.Query, len(queryStrs))
 	for queryIdx := range queryStrs {
 		q := qg.Generate(&queryStrs[queryIdx], queryIdx, *repetitions)
-		queries = append(queries, q...)
+		queries[queryIdx] = q
 	}
 	return queries
 }
@@ -70,6 +72,7 @@ func evaluateQueries(queries []parser.Query) {
 	}
 	close(queryChannel)
 	wg.Wait()
+	log.Println(graphAccess.GetStats())
 }
 
 func runQuery(queryChannel <-chan parser.Query, eval evaluator.Interface) {

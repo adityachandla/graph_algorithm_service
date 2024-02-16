@@ -17,6 +17,7 @@ type GraphAccessRequest struct {
 
 type GraphAccessor interface {
 	GetNeighbours(request GraphAccessRequest) []uint32
+	GetStats() string
 }
 
 type GrpcGraphAccessor struct {
@@ -51,6 +52,15 @@ func (g *GrpcGraphAccessor) GetNeighbours(request GraphAccessRequest) []uint32 {
 		panic(err)
 	}
 	return response.Neighbours
+}
+
+func (g *GrpcGraphAccessor) GetStats() string {
+	req := &pb.StatsRequest{}
+	response, err := g.client.GetStats(context.Background(), req)
+	if err != nil {
+		panic(err)
+	}
+	return response.Stats
 }
 
 func (g *GrpcGraphAccessor) Close() {

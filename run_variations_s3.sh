@@ -1,7 +1,7 @@
 # This remains constant
-runs=100
+runs=20
 location="s3"
-sf=10
+sf=1
 
 algo="bfs"
 parallelism=1

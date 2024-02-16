@@ -2,7 +2,7 @@ syntax= "proto3";
 
 package graph_access_service;
 
-option go_package = "github.com/adityachandla/graph_algorithm_service/generated";
+option go_package = "github.com/adityachandla/graph_access_service/generated";
 
 message AccessRequest {
     uint32 nodeId=1; // Source node id
@@ -26,6 +26,13 @@ message AccessResponse {
     }
 }
 
+message Stats {
+    string stats = 1;
+}
+
+message StatsRequest{}
+
 service GraphAccess {
     rpc GetNeighbours(AccessRequest) returns (AccessResponse) {};
+    rpc GetStats(StatsRequest) returns (Stats) {};
 }

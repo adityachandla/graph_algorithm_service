@@ -21,10 +21,12 @@ scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
 scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
     ./*.csv ubuntu@$ip:~/
 scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ./queries.txt ubuntu@$ip:~/
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
     ./*.sh ubuntu@$ip:~/
 echo "Running graph algorithm service"
-#ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    #ubuntu@$ip "./run_variations_s3.sh"
+ssh -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ubuntu@$ip "nohup ./run_variations_s3.sh </dev/null &"
 
-#scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
-    #ubuntu@$ip:~/*.txt .
+scp -o StrictHostKeyChecking=accept-new -i $pem_file_path\
+    ubuntu@$ip:~/s3*.txt .
