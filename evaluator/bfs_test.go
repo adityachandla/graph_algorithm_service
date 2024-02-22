@@ -30,6 +30,18 @@ func (t *testAccessor) GetNeighbours(req accessor.GraphAccessRequest) []uint32 {
 	return res
 }
 
+func (t *testAccessor) StartQuery(accessor.Algo) int {
+	return 1
+}
+
+func (t *testAccessor) EndQuery(int) {
+
+}
+
+func (t *testAccessor) GetStats() string {
+	return ""
+}
+
 var dummyGraph = &testAccessor{
 	adjacency: map[uint32][]testEdge{
 		1: {{2, 0, true}, {3, 1, true}},
@@ -44,7 +56,9 @@ func TestBfs(t *testing.T) {
 		Node:  1,
 		Edges: []parser.Edge{{Label: 0, Dir: parser.OUTGOING}, {Label: 2, Dir: parser.BOTH}},
 	}
-	res := bfs.Evaluate(query)
+	bfs.Start(query)
+	res := bfs.Evaluate()
+	bfs.End()
 	assert.Equal(t, 1, len(res))
 	assert.Equal(t, []uint32{3}, res)
 
@@ -52,7 +66,9 @@ func TestBfs(t *testing.T) {
 		Node:  3,
 		Edges: []parser.Edge{{Label: 2, Dir: parser.INCOMING}, {Label: 0, Dir: parser.BOTH}},
 	}
-	res = bfs.Evaluate(query)
+	bfs.Start(query)
+	res = bfs.Evaluate()
+	bfs.End()
 	assert.Equal(t, 1, len(res))
 	assert.Equal(t, []uint32{1}, res)
 }

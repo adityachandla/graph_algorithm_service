@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -72,14 +73,16 @@ func evaluateQueries(queries []parser.Query) {
 	}
 	close(queryChannel)
 	wg.Wait()
-	log.Println(graphAccess.GetStats())
+	fmt.Println(graphAccess.GetStats())
 }
 
 func runQuery(queryChannel <-chan parser.Query, eval evaluator.Interface) {
 	for q := range queryChannel {
+		eval.Start(q)
 		start := time.Now()
-		res := eval.Evaluate(q)
+		res := eval.Evaluate()
 		diff := time.Now().Sub(start)
+		eval.End()
 		log.Printf("QueryId=%d Results=%d time=%dms\n", q.Id, len(res), diff.Milliseconds())
 	}
 }

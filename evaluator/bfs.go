@@ -6,7 +6,9 @@ import (
 )
 
 type Interface interface {
-	Evaluate(q parser.Query) []uint32
+	Start(query parser.Query)
+	Evaluate() []uint32
+	End()
 }
 
 type bfsNode struct {
@@ -22,15 +24,18 @@ type nodeLevel struct {
 }
 
 type BFSEvaluator struct {
-	access accessor.GraphAccessor
-	result []uint32
-	queue  *Queue[bfsNode]
-	seen   map[nodeLevel]struct{}
-	edges  []parser.Edge
+	access  accessor.GraphAccessor
+	result  []uint32
+	queue   *Queue[bfsNode]
+	seen    map[nodeLevel]struct{}
+	edges   []parser.Edge
+	queryId int
 }
 
 func NewBfsEvaluator(access accessor.GraphAccessor) *BFSEvaluator {
-	return &BFSEvaluator{access: access}
+	return &BFSEvaluator{
+		access: access,
+	}
 }
 
 func (eval *BFSEvaluator) initialize(q parser.Query) {
@@ -41,8 +46,12 @@ func (eval *BFSEvaluator) initialize(q parser.Query) {
 	eval.queue.AddToFront(bfsNode{q.Node, 0})
 }
 
-func (eval *BFSEvaluator) Evaluate(q parser.Query) []uint32 {
+func (eval *BFSEvaluator) Start(q parser.Query) {
 	eval.initialize(q)
+	eval.queryId = eval.access.StartQuery(accessor.BFS)
+}
+
+func (eval *BFSEvaluator) Evaluate() []uint32 {
 	for !eval.queue.Empty() {
 		toProcess := eval.queue.PopBack()
 		eval.processNode(toProcess)
@@ -50,12 +59,17 @@ func (eval *BFSEvaluator) Evaluate(q parser.Query) []uint32 {
 	return eval.result
 }
 
+func (eval *BFSEvaluator) End() {
+	eval.access.EndQuery(eval.queryId)
+}
+
 func (eval *BFSEvaluator) processNode(toProcess bfsNode) {
 	labelIdx := toProcess.labelIdx
 	request := accessor.GraphAccessRequest{
-		Src:   toProcess.nodeId,
-		Label: eval.edges[labelIdx].Label,
-		Dir:   eval.edges[labelIdx].Dir,
+		Src:     toProcess.nodeId,
+		Label:   eval.edges[labelIdx].Label,
+		Dir:     eval.edges[labelIdx].Dir,
+		QueryId: eval.queryId,
 	}
 	neighbours := eval.access.GetNeighbours(request)
 	if labelIdx == len(eval.edges)-1 {

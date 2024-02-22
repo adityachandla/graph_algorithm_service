@@ -13,12 +13,22 @@ import (
 type GraphAccessRequest struct {
 	Src, Label uint32
 	Dir        parser.Direction
+	QueryId    int
 }
 
 type GraphAccessor interface {
+	StartQuery(Algo) int
 	GetNeighbours(request GraphAccessRequest) []uint32
+	EndQuery(int)
 	GetStats() string
 }
+
+type Algo byte
+
+const (
+	BFS Algo = iota
+	DFS
+)
 
 type GrpcGraphAccessor struct {
 	conn   *grpc.ClientConn
@@ -37,8 +47,9 @@ func InitializeGraphAccess(address string) *GrpcGraphAccessor {
 
 func (g *GrpcGraphAccessor) GetNeighbours(request GraphAccessRequest) []uint32 {
 	req := &pb.AccessRequest{
-		NodeId: request.Src,
-		Label:  request.Label,
+		NodeId:  request.Src,
+		Label:   request.Label,
+		QueryId: int32(request.QueryId),
 	}
 	if request.Dir == parser.OUTGOING {
 		req.Direction = pb.AccessRequest_OUTGOING
@@ -54,6 +65,28 @@ func (g *GrpcGraphAccessor) GetNeighbours(request GraphAccessRequest) []uint32 {
 	return response.Neighbours
 }
 
+func (g *GrpcGraphAccessor) StartQuery(algorithm Algo) int {
+	req := pb.StartQueryRequest{}
+	if algorithm == BFS {
+		req.Algorithm = pb.StartQueryRequest_BFS
+	} else {
+		req.Algorithm = pb.StartQueryRequest_DFS
+	}
+	resp, err := g.client.StartQuery(context.Background(), &req)
+	if err != nil {
+		panic(err)
+	}
+	return int(resp.QueryId)
+}
+
+func (g *GrpcGraphAccessor) EndQuery(id int) {
+	req := pb.EndQueryRequest{QueryId: int32(id)}
+	_, err := g.client.EndQuery(context.Background(), &req)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func (g *GrpcGraphAccessor) GetStats() string {
 	req := &pb.StatsRequest{}
 	response, err := g.client.GetStats(context.Background(), req)
@@ -64,5 +97,8 @@ func (g *GrpcGraphAccessor) GetStats() string {
 }
 
 func (g *GrpcGraphAccessor) Close() {
-	g.conn.Close()
+	err := g.conn.Close()
+	if err != nil {
+		panic(err)
+	}
 }

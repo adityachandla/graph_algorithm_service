@@ -13,11 +13,12 @@ type dfsNode struct {
 }
 
 type DFSEvaluator struct {
-	access accessor.GraphAccessor
-	result []uint32
-	stack  *Stack[dfsNode]
-	seen   map[nodeLevel]struct{}
-	edges  []parser.Edge
+	access  accessor.GraphAccessor
+	result  []uint32
+	stack   *Stack[dfsNode]
+	seen    map[nodeLevel]struct{}
+	edges   []parser.Edge
+	queryId int
 }
 
 func NewDfsEvaluator(access accessor.GraphAccessor) *DFSEvaluator {
@@ -32,8 +33,12 @@ func (eval *DFSEvaluator) initialize(q parser.Query) {
 	eval.stack.Push(dfsNode{q.Node, 0})
 }
 
-func (eval *DFSEvaluator) Evaluate(q parser.Query) []uint32 {
+func (eval *DFSEvaluator) Start(q parser.Query) {
 	eval.initialize(q)
+	eval.queryId = eval.access.StartQuery(accessor.DFS)
+}
+
+func (eval *DFSEvaluator) Evaluate() []uint32 {
 	for !eval.stack.Empty() {
 		toProcess := eval.stack.Pop()
 		eval.processNode(toProcess)
@@ -41,12 +46,17 @@ func (eval *DFSEvaluator) Evaluate(q parser.Query) []uint32 {
 	return eval.result
 }
 
+func (eval *DFSEvaluator) End() {
+	eval.access.EndQuery(eval.queryId)
+}
+
 func (eval *DFSEvaluator) processNode(toProcess dfsNode) {
 	labelIdx := toProcess.labelIdx
 	request := accessor.GraphAccessRequest{
-		Src:   toProcess.nodeId,
-		Label: eval.edges[labelIdx].Label,
-		Dir:   eval.edges[labelIdx].Dir,
+		Src:     toProcess.nodeId,
+		Label:   eval.edges[labelIdx].Label,
+		Dir:     eval.edges[labelIdx].Dir,
+		QueryId: eval.queryId,
 	}
 	neighbours := eval.access.GetNeighbours(request)
 	if labelIdx == len(eval.edges)-1 {

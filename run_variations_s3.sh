@@ -1,7 +1,7 @@
 # This remains constant
 runs=20
 location="s3"
-sf=1
+sf=10
 
 algo="bfs"
 parallelism=1
@@ -10,8 +10,10 @@ parallelism=1
     --repetitions ${runs} \
     --algorithm ${algo} \
     --nodeMap nodeMap${sf}.csv \
-    2>> ${location}_${algo}_${parallelism}_${sf}.txt
+    >> ${location}_${algo}_${parallelism}_${sf}.txt 2>&1
 echo "Finished ${location}_${algo}_${parallelism}_${sf}.txt"
+
+sleep 10 # These ensure that prefetcher has enough time to catch up.
 
 algo="dfs"
 parallelism=1
@@ -20,8 +22,10 @@ parallelism=1
     --repetitions ${runs} \
     --algorithm ${algo} \
     --nodeMap nodeMap${sf}.csv \
-    2>> ${location}_${algo}_${parallelism}_${sf}.txt
+    >> ${location}_${algo}_${parallelism}_${sf}.txt 2>&1
 echo "Finished ${location}_${algo}_${parallelism}_${sf}.txt"
+
+sleep 10
 
 algo="bfs"
 parallelism=2
@@ -30,8 +34,10 @@ parallelism=2
     --repetitions ${runs} \
     --algorithm ${algo} \
     --nodeMap nodeMap${sf}.csv \
-    2>> ${location}_${algo}_${parallelism}_${sf}.txt
+    >> ${location}_${algo}_${parallelism}_${sf}.txt 2>&1
 echo "Finished ${location}_${algo}_${parallelism}_${sf}.txt"
+
+sleep 10
 
 algo="dfs"
 parallelism=2
@@ -40,5 +46,5 @@ parallelism=2
     --repetitions ${runs} \
     --algorithm ${algo} \
     --nodeMap nodeMap${sf}.csv \
-    2>> ${location}_${algo}_${parallelism}_${sf}.txt
+    >> ${location}_${algo}_${parallelism}_${sf}.txt 2>&1
 echo "Finished ${location}_${algo}_${parallelism}_${sf}.txt"

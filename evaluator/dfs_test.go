@@ -13,7 +13,9 @@ func TestDfs(t *testing.T) {
 		Node:  1,
 		Edges: []parser.Edge{{Label: 0, Dir: parser.OUTGOING}, {Label: 2, Dir: parser.BOTH}},
 	}
-	res := dfs.Evaluate(query)
+	dfs.Start(query)
+	res := dfs.Evaluate()
+	dfs.End()
 	assert.Equal(t, 1, len(res))
 	assert.Equal(t, []uint32{3}, res)
 
@@ -21,7 +23,9 @@ func TestDfs(t *testing.T) {
 		Node:  3,
 		Edges: []parser.Edge{{Label: 2, Dir: parser.INCOMING}, {Label: 0, Dir: parser.BOTH}},
 	}
-	res = dfs.Evaluate(query)
+	dfs.Start(query)
+	res = dfs.Evaluate()
+	dfs.End()
 	assert.Equal(t, 1, len(res))
 	assert.Equal(t, []uint32{1}, res)
 }
